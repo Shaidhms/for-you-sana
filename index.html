@@ -1352,8 +1352,10 @@
     const flash = document.getElementById('revealFlash');
     flash.classList.add('active');
 
-    // Play reveal sound
+    // Dip music volume for reveal sound, then bring it back
+    bgMusic.volume = 0.08;
     playSFX(sfxReveal, 0.7);
+    setTimeout(() => { bgMusic.volume = 0.4; }, 2000);
 
     setTimeout(() => {
       document.getElementById('gameSection').classList.add('hidden');
