@@ -98,10 +98,20 @@
     background: var(--deep-green);
   }
 
+  .envelope-section.opening {
+    animation: envelopeExit 1.5s ease forwards;
+  }
+
   .envelope-section.hidden {
     opacity: 0;
     pointer-events: none;
     display: none;
+  }
+
+  @keyframes envelopeExit {
+    0% { opacity: 1; transform: scale(1); }
+    40% { opacity: 1; transform: scale(1.1); }
+    100% { opacity: 0; transform: scale(2.5); filter: blur(8px); }
   }
 
   .envelope {
@@ -1222,10 +1232,17 @@
       osc.stop(now + 1.6);
     });
 
+    // After flap opens, zoom the envelope out while lanterns fade in behind
     setTimeout(() => {
-      document.getElementById('envelopeSection').classList.add('hidden');
+      document.getElementById('envelopeSection').classList.add('opening');
+      // Show game section behind the zooming envelope
       document.getElementById('gameSection').classList.add('visible');
     }, 800);
+
+    // After zoom-out completes, hide envelope
+    setTimeout(() => {
+      document.getElementById('envelopeSection').classList.add('hidden');
+    }, 2300);
   }
 
   // Lantern game
