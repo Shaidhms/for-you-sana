@@ -1,0 +1,1408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thank You, My Love</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Amiri:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --gold: #d4a843;
+    --gold-light: #f0d68a;
+    --deep-green: #0a3d2e;
+    --emerald: #1a6b4a;
+    --cream: #fdf8ef;
+    --warm-white: #fff9f0;
+    --rose: #c97b7b;
+    --soft-pink: #f2d5d5;
+  }
+
+  body {
+    font-family: 'Lato', sans-serif;
+    background: var(--deep-green);
+    min-height: 100vh;
+    overflow-x: hidden;
+    color: #2d2d2d;
+  }
+
+  /* Stars background */
+  .stars-container {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  .star {
+    position: absolute;
+    width: 3px; height: 3px;
+    background: var(--gold-light);
+    border-radius: 50%;
+    animation: twinkle var(--duration) ease-in-out infinite;
+    opacity: 0;
+  }
+
+  @keyframes twinkle {
+    0%, 100% { opacity: 0; transform: scale(0.5); }
+    50% { opacity: var(--max-opacity); transform: scale(1); }
+  }
+
+  /* Floating lanterns */
+  .lanterns-container {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .lantern {
+    position: absolute;
+    font-size: 1.5rem;
+    animation: floatLantern var(--duration) ease-in-out infinite;
+    opacity: 0.3;
+    filter: drop-shadow(0 0 8px rgba(212, 168, 67, 0.4));
+  }
+
+  @keyframes floatLantern {
+    0%, 100% { transform: translateY(0) rotate(-5deg); opacity: 0.2; }
+    50% { transform: translateY(-30px) rotate(5deg); opacity: 0.4; }
+  }
+
+  /* Main card */
+  .card-wrapper {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem 1rem;
+    min-height: 100vh;
+  }
+
+  /* Envelope Section */
+  .envelope-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    cursor: pointer;
+    transition: opacity 0.8s ease;
+    position: relative;
+    z-index: 25;
+  }
+
+  .envelope-section.hidden {
+    opacity: 0;
+    pointer-events: none;
+    position: absolute;
+    top: 0; left: 0;
+  }
+
+  .envelope {
+    width: 280px;
+    height: 200px;
+    position: relative;
+    transition: transform 0.3s ease;
+  }
+
+  .envelope:hover {
+    transform: scale(1.05);
+  }
+
+  .envelope-body {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, var(--gold), var(--gold-light));
+    border-radius: 8px;
+    position: relative;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    overflow: hidden;
+  }
+
+  .envelope-flap {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 50%;
+    background: linear-gradient(180deg, #c49a38, var(--gold));
+    clip-path: polygon(0 0, 50% 100%, 100% 0);
+    transform-origin: top center;
+    transition: transform 0.8s ease;
+    z-index: 2;
+  }
+
+  .envelope.opened .envelope-flap {
+    transform: rotateX(180deg);
+  }
+
+  .envelope-heart {
+    position: absolute;
+    top: 35%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 2.5rem;
+    z-index: 1;
+    animation: heartPulse 1.5s ease-in-out infinite;
+  }
+
+  @keyframes heartPulse {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); }
+    50% { transform: translate(-50%, -50%) scale(1.15); }
+  }
+
+  .envelope-label {
+    color: var(--gold-light);
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    margin-top: 2rem;
+    animation: fadeInUp 1s ease 0.5s both;
+    text-align: center;
+  }
+
+  .tap-hint {
+    color: rgba(240, 214, 138, 0.6);
+    font-size: 0.85rem;
+    margin-top: 0.8rem;
+    animation: fadeInUp 1s ease 1s both, pulse 2s ease-in-out infinite 2s;
+  }
+
+  /* Lantern Game Section */
+  .game-section {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    transition: opacity 1s ease;
+    position: relative;
+    z-index: 20;
+  }
+
+  .game-section.visible {
+    display: flex;
+    animation: fadeInUp 0.8s ease both;
+  }
+
+  .game-section.hidden {
+    opacity: 0;
+    pointer-events: none;
+    position: absolute;
+    top: 0; left: 0;
+  }
+
+  .game-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    color: var(--gold);
+    text-align: center;
+    margin-bottom: 0.5rem;
+    animation: fadeInUp 0.8s ease 0.3s both;
+  }
+
+  .game-subtitle {
+    color: rgba(240, 214, 138, 0.6);
+    font-size: 0.9rem;
+    text-align: center;
+    margin-bottom: 2.5rem;
+    animation: fadeInUp 0.8s ease 0.6s both;
+  }
+
+  .game-lanterns {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 2rem;
+    animation: fadeInUp 0.8s ease 0.9s both;
+  }
+
+  .game-lantern {
+    width: 80px;
+    height: 120px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+    transition: transform 0.3s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .game-lantern:hover {
+    transform: scale(1.1);
+  }
+
+  .game-lantern:active {
+    transform: scale(0.95);
+  }
+
+  .lantern-body {
+    width: 50px;
+    height: 70px;
+    background: rgba(212, 168, 67, 0.15);
+    border: 2px solid rgba(212, 168, 67, 0.3);
+    border-radius: 8px 8px 12px 12px;
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 8px;
+    transition: all 0.6s ease;
+    overflow: visible;
+  }
+
+  .lantern-top {
+    width: 30px;
+    height: 12px;
+    background: rgba(212, 168, 67, 0.3);
+    border-radius: 4px 4px 0 0;
+    margin-bottom: -2px;
+    transition: all 0.6s ease;
+  }
+
+  .lantern-hook {
+    width: 16px;
+    height: 10px;
+    border: 2px solid rgba(212, 168, 67, 0.3);
+    border-bottom: none;
+    border-radius: 8px 8px 0 0;
+    margin-bottom: -2px;
+    transition: all 0.6s ease;
+  }
+
+  .lantern-flame {
+    font-size: 1.3rem;
+    opacity: 0;
+    transform: scale(0) translateY(0);
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: absolute;
+    top: -18px;
+    filter: drop-shadow(0 4px 8px rgba(255, 150, 0, 0.5));
+  }
+
+  .game-lantern.lit .lantern-body {
+    background: radial-gradient(ellipse at center, rgba(255, 200, 50, 0.4), rgba(212, 168, 67, 0.15));
+    border-color: var(--gold);
+    box-shadow: 0 0 20px rgba(255, 200, 50, 0.3), 0 0 40px rgba(212, 168, 67, 0.15);
+  }
+
+  .game-lantern.lit .lantern-top {
+    background: var(--gold);
+  }
+
+  .game-lantern.lit .lantern-hook {
+    border-color: var(--gold);
+  }
+
+  .game-lantern.lit .lantern-flame {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    animation: flicker 1.5s ease-in-out infinite alternate;
+  }
+
+  @keyframes flicker {
+    0% { transform: scale(1) translateY(0) rotate(-3deg); }
+    50% { transform: scale(1.15) translateY(-2px) rotate(2deg); }
+    100% { transform: scale(0.95) translateY(1px) rotate(-1deg); }
+  }
+
+  .game-progress {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    animation: fadeInUp 0.8s ease 1.2s both;
+  }
+
+  .progress-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: rgba(212, 168, 67, 0.2);
+    border: 1px solid rgba(212, 168, 67, 0.4);
+    transition: all 0.4s ease;
+  }
+
+  .progress-dot.filled {
+    background: var(--gold);
+    border-color: var(--gold-light);
+    box-shadow: 0 0 8px rgba(212, 168, 67, 0.5);
+  }
+
+  .game-message {
+    color: var(--gold-light);
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    text-align: center;
+    min-height: 2rem;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    animation: fadeInUp 0.8s ease 1.4s both;
+  }
+
+  .game-message.show {
+    opacity: 1;
+  }
+
+  /* Card reveal flash */
+  .reveal-flash {
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(circle, rgba(255, 200, 50, 0.6), transparent);
+    z-index: 50;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+
+  .reveal-flash.active {
+    opacity: 1;
+    animation: flashOut 1.5s ease forwards;
+  }
+
+  @keyframes flashOut {
+    0% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+  }
+
+  /* Photo panel */
+  .photo-panel {
+    display: none;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 38%;
+    height: 100vh;
+    z-index: 8;
+    align-items: flex-end;
+    justify-content: center;
+    pointer-events: none;
+    animation: photoReveal 1.5s ease 0.5s both;
+  }
+
+  .photo-panel.visible {
+    display: flex;
+  }
+
+  .photo-panel img {
+    max-height: 85vh;
+    max-width: 90%;
+    object-fit: contain;
+    filter: drop-shadow(0 0 40px rgba(212, 168, 67, 0.25));
+    animation: photoFloat 6s ease-in-out infinite;
+  }
+
+  .photo-glow {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 70%;
+    height: 120px;
+    background: radial-gradient(ellipse, rgba(212, 168, 67, 0.15) 0%, transparent 70%);
+    filter: blur(20px);
+  }
+
+  @keyframes photoReveal {
+    from { opacity: 0; transform: translateX(-30px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  @keyframes photoFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  /* Cinematic reveal sections */
+  .reveal-section {
+    opacity: 0;
+    transform: translateY(40px) scale(0.97);
+    transition: all 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    will-change: opacity, transform;
+  }
+
+  .reveal-section.revealed {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  /* Card content */
+  .card-content {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    max-width: 600px;
+    width: 100%;
+  }
+
+  .card-content.visible {
+    display: flex;
+  }
+
+  @keyframes cardReveal {
+    from { opacity: 0; transform: translateY(40px) scale(0.95); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Bismillah header */
+  .bismillah {
+    font-family: 'Amiri', serif;
+    font-size: 2rem;
+    color: var(--gold);
+    text-align: center;
+    margin-bottom: 0.5rem;
+    animation: fadeInUp 0.8s ease 0.3s both;
+    direction: rtl;
+  }
+
+  .bismillah-translation {
+    font-family: 'Lato', sans-serif;
+    font-size: 0.75rem;
+    color: rgba(240, 214, 138, 0.5);
+    text-align: center;
+    margin-bottom: 2rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    animation: fadeInUp 0.8s ease 0.5s both;
+  }
+
+  /* Name banner */
+  .name-banner {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 0.8rem;
+    padding: 0.6rem 3rem;
+    text-align: center;
+    align-self: center;
+    background: linear-gradient(135deg, rgba(212, 168, 67, 0.2), rgba(212, 168, 67, 0.1));
+    border: 1px solid rgba(212, 168, 67, 0.4);
+    border-radius: 50px;
+    overflow: hidden;
+  }
+
+  .name-banner::before,
+  .name-banner::after {
+    content: '✦';
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--gold);
+    font-size: 0.7rem;
+    opacity: 0.6;
+  }
+
+  .name-banner::before { left: 1rem; }
+  .name-banner::after { right: 1rem; }
+
+  .name-banner-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.8rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--gold-light), var(--gold), var(--gold-light));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    filter: drop-shadow(0 0 10px rgba(212, 168, 67, 0.3));
+  }
+
+  /* Crescent moon decoration */
+  .crescent {
+    font-size: 3rem;
+    color: var(--gold);
+    text-align: center;
+    margin-bottom: 1rem;
+    animation: fadeInUp 0.8s ease 0.6s both;
+    filter: drop-shadow(0 0 20px rgba(212, 168, 67, 0.4));
+  }
+
+  /* Title */
+  .card-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.2rem;
+    color: var(--gold);
+    text-align: center;
+    line-height: 1.3;
+    margin-bottom: 0.5rem;
+    animation: fadeInUp 0.8s ease 0.8s both;
+  }
+
+  .card-subtitle {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 1.1rem;
+    color: var(--gold-light);
+    text-align: center;
+    margin-bottom: 2rem;
+    opacity: 0.8;
+    animation: fadeInUp 0.8s ease 1s both;
+  }
+
+  /* Message sections */
+  .message-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(212, 168, 67, 0.2);
+    border-radius: 16px;
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+    width: 100%;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.8s ease;
+  }
+
+  .message-card.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .message-card h3 {
+    font-family: 'Playfair Display', serif;
+    color: var(--gold);
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .message-card p {
+    color: var(--cream);
+    line-height: 1.8;
+    font-size: 1rem;
+    font-weight: 300;
+  }
+
+  .message-card .highlight {
+    color: var(--gold-light);
+    font-weight: 400;
+  }
+
+  /* Sehri & Iftar counter */
+  .counter-section {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin: 1.5rem 0;
+    flex-wrap: wrap;
+  }
+
+  .counter-box {
+    text-align: center;
+    padding: 1.2rem 1.5rem;
+    background: rgba(212, 168, 67, 0.1);
+    border: 1px solid rgba(212, 168, 67, 0.3);
+    border-radius: 12px;
+    min-width: 120px;
+  }
+
+  .counter-number {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.5rem;
+    color: var(--gold);
+    font-weight: 700;
+    display: block;
+  }
+
+  .counter-number .counting {
+    display: inline-block;
+  }
+
+  .counter-label {
+    color: var(--gold-light);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-top: 0.3rem;
+  }
+
+  /* Dua section */
+  .dua-section {
+    background: linear-gradient(135deg, rgba(212, 168, 67, 0.15), rgba(26, 107, 74, 0.2));
+    border: 1px solid rgba(212, 168, 67, 0.3);
+    border-radius: 16px;
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+    width: 100%;
+    text-align: center;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.8s ease;
+  }
+
+  .dua-section.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .dua-arabic {
+    font-family: 'Amiri', serif;
+    font-size: 1.6rem;
+    color: var(--gold);
+    direction: rtl;
+    line-height: 2;
+    margin-bottom: 1rem;
+  }
+
+  .dua-translation {
+    color: var(--cream);
+    font-style: italic;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    opacity: 0.9;
+  }
+
+  /* Promise section */
+  .promise-card {
+    background: linear-gradient(135deg, rgba(201, 123, 123, 0.1), rgba(212, 168, 67, 0.1));
+    border: 1px solid rgba(201, 123, 123, 0.3);
+    border-radius: 16px;
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+    width: 100%;
+    text-align: center;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.8s ease;
+  }
+
+  .promise-card.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .promise-card h3 {
+    font-family: 'Playfair Display', serif;
+    color: var(--rose);
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+  }
+
+  .promise-card p {
+    color: var(--cream);
+    line-height: 1.8;
+    font-size: 1rem;
+    font-weight: 300;
+  }
+
+  .promise-card .promise-text {
+    color: var(--gold-light);
+    font-family: 'Playfair Display', serif;
+    font-size: 1.15rem;
+    font-style: italic;
+    margin-top: 1rem;
+    line-height: 1.6;
+  }
+
+  /* Ornamental divider */
+  .divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin: 1rem 0;
+    opacity: 0;
+    transition: opacity 0.8s ease;
+  }
+
+  .divider.visible { opacity: 1; }
+
+  .divider-line {
+    width: 60px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+
+  .divider-icon {
+    color: var(--gold);
+    font-size: 0.8rem;
+  }
+
+  /* Footer */
+  .card-footer {
+    text-align: center;
+    margin-top: 1rem;
+    margin-bottom: 3rem;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.8s ease;
+  }
+
+  .card-footer.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .footer-from {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    color: var(--gold);
+    margin-bottom: 0.3rem;
+  }
+
+  .footer-date {
+    color: rgba(240, 214, 138, 0.5);
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+  }
+
+  /* Floating petals */
+  .petal {
+    position: fixed;
+    pointer-events: none;
+    z-index: 5;
+    opacity: 0;
+    font-size: 1rem;
+  }
+
+  @keyframes fallPetal {
+    0% {
+      opacity: 0;
+      transform: translateY(-20px) rotate(0deg) translateX(0);
+    }
+    10% { opacity: 0.6; }
+    90% { opacity: 0.3; }
+    100% {
+      opacity: 0;
+      transform: translateY(100vh) rotate(360deg) translateX(var(--drift));
+    }
+  }
+
+  /* Interactive heart burst on click */
+  .heart-burst {
+    position: fixed;
+    pointer-events: none;
+    z-index: 100;
+    font-size: 1.2rem;
+    animation: burstHeart 1s ease-out forwards;
+  }
+
+  @keyframes burstHeart {
+    0% { opacity: 1; transform: translate(0, 0) scale(1); }
+    100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0.3); }
+  }
+
+  /* Desktop: photo left, content right */
+  @media (min-width: 769px) {
+    .card-wrapper {
+      margin-left: 38%;
+      width: 62%;
+      padding: 2rem 3rem;
+    }
+  }
+
+  /* Mobile: photo as inline hero, stacked */
+  .photo-hero {
+    display: none;
+    width: 100%;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    animation: fadeInUp 0.8s ease 0.4s both;
+  }
+
+  .photo-hero img {
+    max-height: 45vh;
+    max-width: 80%;
+    object-fit: contain;
+    filter: drop-shadow(0 0 30px rgba(212, 168, 67, 0.2));
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .photo-panel { display: none !important; }
+    .photo-hero.visible { display: block; }
+    .card-wrapper { width: 100%; margin-left: 0; }
+  }
+
+  @media (max-width: 480px) {
+    .name-banner-text { font-size: 2.2rem; }
+    .card-title { font-size: 1.7rem; }
+    .bismillah { font-size: 1.6rem; }
+    .message-card, .dua-section, .promise-card { padding: 1.5rem; }
+    .counter-section { gap: 1rem; }
+    .counter-box { min-width: 100px; padding: 1rem; }
+    .counter-number { font-size: 2rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Stars -->
+<div class="stars-container" id="stars"></div>
+
+<!-- Lanterns -->
+<div class="lanterns-container" id="lanterns"></div>
+
+<!-- Audio -->
+<audio id="bgMusic" loop preload="auto">
+  <source src="nasheed.mp3" type="audio/mpeg">
+</audio>
+<audio id="sfxReveal" preload="auto">
+  <source src="reveal.mp3" type="audio/mpeg">
+</audio>
+
+<!-- Reveal flash overlay -->
+<div class="reveal-flash" id="revealFlash"></div>
+
+<!-- Envelope -->
+<div class="envelope-section" id="envelopeSection" onclick="openEnvelope()">
+  <div class="envelope" id="envelope">
+    <div class="envelope-body">
+      <div class="envelope-heart">💝</div>
+    </div>
+    <div class="envelope-flap"></div>
+  </div>
+  <div class="envelope-label">You have a special message</div>
+  <div class="tap-hint">Tap to open</div>
+</div>
+
+<!-- Lantern lighting game -->
+<div class="game-section" id="gameSection">
+  <div class="game-title">Light the Lanterns of Ramadan</div>
+  <div class="game-subtitle">Tap each lantern to light it up</div>
+
+  <div class="game-lanterns" id="gameLanterns">
+    <div class="game-lantern" onclick="lightLantern(this, 0)">
+      <div class="lantern-hook"></div>
+      <div class="lantern-top"></div>
+      <div class="lantern-body">
+        <div class="lantern-flame">🔥</div>
+      </div>
+    </div>
+    <div class="game-lantern" onclick="lightLantern(this, 1)">
+      <div class="lantern-hook"></div>
+      <div class="lantern-top"></div>
+      <div class="lantern-body">
+        <div class="lantern-flame">🔥</div>
+      </div>
+    </div>
+    <div class="game-lantern" onclick="lightLantern(this, 2)">
+      <div class="lantern-hook"></div>
+      <div class="lantern-top"></div>
+      <div class="lantern-body">
+        <div class="lantern-flame">🔥</div>
+      </div>
+    </div>
+    <div class="game-lantern" onclick="lightLantern(this, 3)">
+      <div class="lantern-hook"></div>
+      <div class="lantern-top"></div>
+      <div class="lantern-body">
+        <div class="lantern-flame">🔥</div>
+      </div>
+    </div>
+    <div class="game-lantern" onclick="lightLantern(this, 4)">
+      <div class="lantern-hook"></div>
+      <div class="lantern-top"></div>
+      <div class="lantern-body">
+        <div class="lantern-flame">🔥</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="game-progress">
+    <div class="progress-dot" id="dot0"></div>
+    <div class="progress-dot" id="dot1"></div>
+    <div class="progress-dot" id="dot2"></div>
+    <div class="progress-dot" id="dot3"></div>
+    <div class="progress-dot" id="dot4"></div>
+  </div>
+
+  <div class="game-message" id="gameMessage"></div>
+</div>
+
+<!-- Photo panel (desktop: fixed left side) -->
+<div class="photo-panel" id="photoPanel">
+  <div class="photo-glow"></div>
+  <img src="sana.png" alt="Sana">
+</div>
+
+<!-- Card content -->
+<div class="card-wrapper">
+  <div class="card-content" id="cardContent">
+
+    <!-- Section 1: Photo + Bismillah -->
+    <div class="reveal-section" data-reveal="0">
+      <div class="photo-hero" id="photoHero">
+        <img src="sana.png" alt="Sana">
+      </div>
+      <div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</div>
+      <div class="bismillah-translation">In the name of Allah, the Most Gracious, the Most Merciful</div>
+    </div>
+
+    <!-- Section 2: Name + Title -->
+    <div class="reveal-section" data-reveal="1" style="text-align: center; display: flex; flex-direction: column; align-items: center;">
+      <div class="crescent">☪</div>
+      <div class="name-banner">
+        <span class="name-banner-text">Dear Sana</span>
+      </div>
+      <div class="card-title">Thank You, My Love</div>
+      <div class="card-subtitle">For every Sehri & every Iftar this Ramadan</div>
+    </div>
+
+    <!-- Section 3: Divider -->
+    <div class="reveal-section" data-reveal="2">
+      <div class="divider visible">
+        <div class="divider-line"></div>
+        <div class="divider-icon">&#10022;</div>
+        <div class="divider-line"></div>
+      </div>
+    </div>
+
+    <!-- Section 4: Counter -->
+    <div class="reveal-section" data-reveal="3">
+      <div class="message-card visible">
+        <div class="counter-section">
+          <div class="counter-box">
+            <span class="counter-number"><span class="counting" data-target="30">0</span></span>
+            <div class="counter-label">Sehris</div>
+          </div>
+          <div class="counter-box">
+            <span class="counter-number"><span class="counting" data-target="30">0</span></span>
+            <div class="counter-label">Iftars</div>
+          </div>
+          <div class="counter-box">
+            <span class="counter-number"><span class="counting" data-target="0">0</span></span>
+            <div class="counter-label">Days Missed</div>
+          </div>
+        </div>
+        <p style="text-align: center; margin-top: 1rem; font-size: 0.9rem; color: var(--gold-light);">
+          Not a single day missed. MashaAllah.
+        </p>
+      </div>
+    </div>
+
+    <!-- Section 5: Quiet Sacrifices -->
+    <div class="reveal-section" data-reveal="4">
+      <div class="message-card visible">
+        <h3>🌙 The Quiet Sacrifices</h3>
+        <p>
+          Every morning before Fajr, while the world was still asleep, you were already in the kitchen.
+          Preparing warm meals, making sure everything was ready before the adhan.
+          <span class="highlight">Not once did you complain. Not once did you miss a day.</span>
+        </p>
+        <br>
+        <p>
+          And every evening, no matter how tiring the fast was, you laid out beautiful iftars
+          that turned our table into a blessing. The dates, the fruits, the dishes you made with
+          so much love. Our home smelled like Ramadan because of you.
+        </p>
+      </div>
+    </div>
+
+    <!-- Section 6: What I See -->
+    <div class="reveal-section" data-reveal="5">
+      <div class="message-card visible">
+        <h3>✨ What I See</h3>
+        <p>
+          I see a woman who gives without asking for anything in return.
+          A woman who fasts all day, yet still has the energy to serve her family first.
+          A woman whose patience is a quiet form of ibadah.
+        </p>
+        <br>
+        <p>
+          <span class="highlight">You don't just feed us. You nourish us with your love, your care, your dua.</span>
+          And that is something no words can fully capture.
+        </p>
+      </div>
+    </div>
+
+    <!-- Section 7: Divider -->
+    <div class="reveal-section" data-reveal="6">
+      <div class="divider visible">
+        <div class="divider-line"></div>
+        <div class="divider-icon">&#10022;</div>
+        <div class="divider-line"></div>
+      </div>
+    </div>
+
+    <!-- Section 8: Duas -->
+    <div class="reveal-section" data-reveal="7">
+      <div class="dua-section visible">
+        <h3 style="font-family: 'Playfair Display', serif; color: var(--gold); font-size: 1.2rem; margin-bottom: 1.2rem;">
+          Duas for You
+        </h3>
+
+        <div class="dua-arabic" style="font-size: 1.8rem;">
+          تَقَبَّلَ اللَّهُ مِنَّا وَمِنْكُم
+        </div>
+        <div class="dua-translation">
+          "May Allah accept from us and from you."
+        </div>
+
+        <br>
+
+        <div class="dua-arabic">
+          رَبَّنَا تَقَبَّلْ مِنَّا إِنَّكَ أَنْتَ السَّمِيعُ الْعَلِيم
+        </div>
+        <div class="dua-translation">
+          "Our Lord, accept from us. Indeed, You are the All-Hearing, the All-Knowing." (Quran 2:127)
+        </div>
+
+        <br>
+
+        <div class="dua-arabic">
+          رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّار
+        </div>
+        <div class="dua-translation">
+          "Our Lord, give us good in this world and good in the Hereafter, and save us from the Fire." (Quran 2:201)
+        </div>
+
+        <br>
+
+        <div class="dua-arabic">
+          اللَّهُمَّ بَارِكْ لَهَا فِي حَيَاتِهَا وَصِحَّتِهَا وَعَمَلِهَا
+        </div>
+        <div class="dua-translation">
+          "O Allah, bless her in her life, her health, and her endeavors."
+        </div>
+
+        <br>
+
+        <div class="dua-arabic">
+          اللَّهُمَّ اجْعَلْهَا مِنَ السُّعَدَاءِ فِي الدُّنْيَا وَالْآخِرَةِ
+        </div>
+        <div class="dua-translation">
+          "O Allah, make her among the happy ones in this world and the Hereafter."
+        </div>
+
+        <br>
+
+        <div class="dua-arabic">
+          رَبَّنَا هَبْ لَنَا مِنْ أَزْوَاجِنَا وَذُرِّيَّاتِنَا قُرَّةَ أَعْيُنٍ وَاجْعَلْنَا لِلْمُتَّقِينَ إِمَامًا
+        </div>
+        <div class="dua-translation">
+          "Our Lord, grant us from our spouses and offspring comfort to our eyes
+          and make us leaders for the righteous." (Surah Al-Furqan, 25:74)
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 9: Promise -->
+    <div class="reveal-section" data-reveal="8">
+      <div class="promise-card visible">
+        <h3>My Promise to You</h3>
+        <p>
+          Whatever dreams you carry in your heart, whatever goals you wish to achieve,
+          whatever path you want to walk...
+        </p>
+        <div class="promise-text">
+          I am with you. I will support you. I will make sure you achieve it.
+          The way you stood by me every single day this Ramadan,
+          I will stand by you every single day of your journey.
+          <br><br>
+          Your dreams are my responsibility. InShaAllah.
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 10: From My Heart -->
+    <div class="reveal-section" data-reveal="9">
+      <div class="message-card visible">
+        <h3>💚 From My Heart</h3>
+        <p>
+          Jazak Allah Khair for being the incredible woman you are.
+          For the love you pour into this family. For the silent prayers you make for us.
+          For making this Ramadan so special.
+        </p>
+        <br>
+        <p style="text-align: center;">
+          <span class="highlight" style="font-size: 1.15rem; font-family: 'Playfair Display', serif;">
+            May Allah reward you abundantly in this life and the next.<br>
+            May He grant you every happiness your heart desires.<br>
+            Ameen.
+          </span>
+        </p>
+      </div>
+    </div>
+
+    <!-- Section 11: Divider -->
+    <div class="reveal-section" data-reveal="10">
+      <div class="divider visible">
+        <div class="divider-line"></div>
+        <div class="divider-icon">&#10022;</div>
+        <div class="divider-line"></div>
+      </div>
+    </div>
+
+    <!-- Section 12: Footer -->
+    <div class="reveal-section" data-reveal="11">
+      <div class="card-footer visible">
+        <div class="footer-from">With all my love and gratitude,</div>
+        <div class="footer-from" style="font-size: 1.4rem; margin-top: 0.5rem;">Shaid</div>
+        <br>
+        <div class="dua-arabic" style="font-size: 1.6rem; color: var(--gold); margin-top: 1rem;">
+          عِيدُ مُبَارَك
+        </div>
+        <div style="font-family: 'Playfair Display', serif; color: var(--gold-light); font-size: 1.3rem; margin-top: 0.3rem;">
+          Eid Mubarak
+        </div>
+        <br>
+        <div class="dua-arabic" style="font-size: 1.2rem; color: var(--gold); margin-top: 0.5rem;">
+          تَقَبَّلَ اللَّهُ مِنَّا وَمِنْكُم
+        </div>
+        <div class="dua-translation" style="color: rgba(240, 214, 138, 0.7); font-size: 0.85rem;">
+          "May Allah accept from us and from you"
+        </div>
+        <div class="footer-date" style="margin-top: 1rem;">Ramadan 2026 / 1447 AH</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // Create stars
+  const starsContainer = document.getElementById('stars');
+  for (let i = 0; i < 80; i++) {
+    const star = document.createElement('div');
+    star.className = 'star';
+    star.style.left = Math.random() * 100 + '%';
+    star.style.top = Math.random() * 100 + '%';
+    star.style.setProperty('--duration', (2 + Math.random() * 4) + 's');
+    star.style.setProperty('--max-opacity', (0.3 + Math.random() * 0.7).toString());
+    star.style.animationDelay = Math.random() * 4 + 's';
+    star.style.width = (2 + Math.random() * 2) + 'px';
+    star.style.height = star.style.width;
+    starsContainer.appendChild(star);
+  }
+
+  // Create floating lanterns (background decoration)
+  const lanternsContainer = document.getElementById('lanterns');
+  const lanternEmojis = ['🏮', '🕯️', '✨'];
+  for (let i = 0; i < 8; i++) {
+    const lantern = document.createElement('div');
+    lantern.className = 'lantern';
+    lantern.textContent = lanternEmojis[i % lanternEmojis.length];
+    lantern.style.left = (5 + Math.random() * 90) + '%';
+    lantern.style.top = (5 + Math.random() * 85) + '%';
+    lantern.style.setProperty('--duration', (4 + Math.random() * 4) + 's');
+    lantern.style.animationDelay = Math.random() * 3 + 's';
+    lanternsContainer.appendChild(lantern);
+  }
+
+  // Envelope open -> Lantern game
+  function openEnvelope() {
+    const envelope = document.getElementById('envelope');
+    envelope.classList.add('opened');
+
+    setTimeout(() => {
+      document.getElementById('envelopeSection').classList.add('hidden');
+      document.getElementById('gameSection').classList.add('visible');
+    }, 800);
+  }
+
+  // Lantern game
+  let litCount = 0;
+  const totalLanterns = 5;
+  const messages = [
+    '',
+    'Beautiful...',
+    'Keep going...',
+    'MashaAllah...',
+    'One more...',
+    ''
+  ];
+
+  const bgMusic = document.getElementById('bgMusic');
+  const sfxReveal = document.getElementById('sfxReveal');
+
+  bgMusic.load();
+  sfxReveal.load();
+
+  function playSFX(audioEl, volume) {
+    const clone = audioEl.cloneNode(true);
+    clone.volume = volume;
+    clone.play().catch(() => {});
+    clone.addEventListener('ended', () => clone.remove());
+  }
+
+  // Ascending chime notes (C5, E5, G5, B5, D6) - a rising sparkle
+  const chimeNotes = [523, 659, 784, 988, 1175];
+  let chimeCtx;
+
+  function playChime(index) {
+    if (!chimeCtx) chimeCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (chimeCtx.state === 'suspended') chimeCtx.resume();
+
+    const freq = chimeNotes[index] || 523;
+    const now = chimeCtx.currentTime;
+
+    // Main tone
+    const osc = chimeCtx.createOscillator();
+    osc.type = 'sine';
+    osc.frequency.value = freq;
+
+    // Harmonic overtone for shimmer
+    const osc2 = chimeCtx.createOscillator();
+    osc2.type = 'sine';
+    osc2.frequency.value = freq * 2.5;
+
+    // Gain envelope - bell shape
+    const gain = chimeCtx.createGain();
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.linearRampToValueAtTime(0.4, now + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 1.2);
+
+    // Shimmer gain (quieter)
+    const gain2 = chimeCtx.createGain();
+    gain2.gain.setValueAtTime(0, now);
+    gain2.gain.linearRampToValueAtTime(0.12, now + 0.01);
+    gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
+
+    osc.connect(gain);
+    osc2.connect(gain2);
+    gain.connect(chimeCtx.destination);
+    gain2.connect(chimeCtx.destination);
+
+    osc.start(now);
+    osc2.start(now);
+    osc.stop(now + 1.3);
+    osc2.stop(now + 0.9);
+  }
+
+  function lightLantern(el, index) {
+    if (el.classList.contains('lit')) return;
+
+    el.classList.add('lit');
+    litCount++;
+
+    // Play ascending chime - each lantern is a higher note
+    playChime(index);
+
+    // Fill progress dot
+    document.getElementById('dot' + index).classList.add('filled');
+
+    // Show message
+    const msgEl = document.getElementById('gameMessage');
+    msgEl.textContent = messages[litCount] || '';
+    msgEl.classList.add('show');
+
+    // All lanterns lit - reveal the card
+    if (litCount === totalLanterns) {
+      setTimeout(() => revealCard(), 1200);
+    }
+  }
+
+  function revealCard() {
+    // Flash effect
+    const flash = document.getElementById('revealFlash');
+    flash.classList.add('active');
+
+    // Play reveal sound
+    playSFX(sfxReveal, 0.7);
+
+    // Start background nasheed music on card reveal
+    bgMusic.volume = 0.4;
+    bgMusic.play().catch(() => {});
+
+    setTimeout(() => {
+      document.getElementById('gameSection').classList.add('hidden');
+      document.getElementById('cardContent').classList.add('visible');
+      document.getElementById('photoPanel').classList.add('visible');
+
+      // Reveal sections as user scrolls (IntersectionObserver)
+      const sections = document.querySelectorAll('.reveal-section');
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('revealed');
+
+            // Start counters when counter section appears
+            if (entry.target.dataset.reveal === '3') {
+              startCounters();
+            }
+          }
+        });
+      }, { threshold: 0.15 });
+
+      sections.forEach(el => observer.observe(el));
+
+      // Reveal first few sections immediately
+      sections[0].classList.add('revealed');
+      setTimeout(() => sections[1].classList.add('revealed'), 300);
+      setTimeout(() => sections[2].classList.add('revealed'), 600);
+
+      startPetals();
+    }, 800);
+  }
+
+  // Counter animation
+  function startCounters() {
+    const counters = document.querySelectorAll('.counting');
+    counters.forEach(counter => {
+      const target = parseInt(counter.dataset.target);
+      if (target === 0) {
+        counter.textContent = '0';
+        return;
+      }
+      let current = 0;
+      const increment = target / 40;
+      const timer = setInterval(() => {
+        current += increment;
+        if (current >= target) {
+          counter.textContent = target;
+          clearInterval(timer);
+        } else {
+          counter.textContent = Math.ceil(current);
+        }
+      }, 50);
+    });
+  }
+
+  // (scroll animations replaced by cinematic reveal)
+
+  // Floating rose petals
+  function startPetals() {
+    const petals = ['🌹', '🌸', '💐', '🪻', '🌷'];
+    setInterval(() => {
+      const petal = document.createElement('div');
+      petal.className = 'petal';
+      petal.textContent = petals[Math.floor(Math.random() * petals.length)];
+      petal.style.left = Math.random() * 100 + '%';
+      petal.style.top = '-20px';
+      petal.style.setProperty('--drift', (Math.random() * 100 - 50) + 'px');
+      petal.style.animation = `fallPetal ${5 + Math.random() * 5}s linear forwards`;
+      document.body.appendChild(petal);
+
+      setTimeout(() => petal.remove(), 10000);
+    }, 1500);
+  }
+
+  // Heart burst on click anywhere on card
+  document.addEventListener('click', (e) => {
+    if (document.getElementById('cardContent').classList.contains('visible')) {
+      for (let i = 0; i < 6; i++) {
+        const heart = document.createElement('div');
+        heart.className = 'heart-burst';
+        heart.textContent = ['❤️', '💛', '💚', '✨', '🤍', '💖'][i];
+        heart.style.left = e.clientX + 'px';
+        heart.style.top = e.clientY + 'px';
+        const angle = (Math.PI * 2 / 6) * i;
+        heart.style.setProperty('--dx', Math.cos(angle) * 60 + 'px');
+        heart.style.setProperty('--dy', Math.sin(angle) * 60 - 30 + 'px');
+        document.body.appendChild(heart);
+        setTimeout(() => heart.remove(), 1000);
+      }
+    }
+  });
+</script>
+
+</body>
+</html>
