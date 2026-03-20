@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Thank You, My Love</title>
+<title>For You, Sana</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Amiri:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -1331,8 +1331,17 @@
     msgEl.textContent = messages[litCount] || '';
     msgEl.classList.add('show');
 
-    // All lanterns lit - reveal the card
+    // Pre-buffer music when 4th lantern is lit
+    if (litCount === totalLanterns - 1) {
+      bgMusic.volume = 0;
+      bgMusic.play().then(() => bgMusic.pause()).catch(() => {});
+    }
+
+    // All lanterns lit - start music immediately, then reveal the card
     if (litCount === totalLanterns) {
+      bgMusic.volume = 0.4;
+      bgMusic.currentTime = 0;
+      bgMusic.play().catch(() => {});
       setTimeout(() => revealCard(), 1200);
     }
   }
@@ -1344,10 +1353,6 @@
 
     // Play reveal sound
     playSFX(sfxReveal, 0.7);
-
-    // Start background nasheed music on card reveal
-    bgMusic.volume = 0.4;
-    bgMusic.play().catch(() => {});
 
     setTimeout(() => {
       document.getElementById('gameSection').classList.add('hidden');
