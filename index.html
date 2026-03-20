@@ -1314,6 +1314,8 @@
     osc2.stop(now + 0.9);
   }
 
+  let musicPreloaded = false;
+
   function lightLantern(el, index) {
     if (el.classList.contains('lit')) return;
 
@@ -1331,17 +1333,16 @@
     msgEl.textContent = messages[litCount] || '';
     msgEl.classList.add('show');
 
-    // Pre-buffer music when 4th lantern is lit
-    if (litCount === totalLanterns - 1) {
-      bgMusic.volume = 0;
-      bgMusic.play().then(() => bgMusic.pause()).catch(() => {});
+    // On first lantern tap, start music silently to unlock and buffer
+    if (!musicPreloaded) {
+      musicPreloaded = true;
+      bgMusic.volume = 0.001;
+      bgMusic.play().catch(() => {});
     }
 
-    // All lanterns lit - start music immediately, then reveal the card
+    // All lanterns lit - unmute music instantly, then reveal the card
     if (litCount === totalLanterns) {
       bgMusic.volume = 0.4;
-      bgMusic.currentTime = 0;
-      bgMusic.play().catch(() => {});
       setTimeout(() => revealCard(), 1200);
     }
   }
