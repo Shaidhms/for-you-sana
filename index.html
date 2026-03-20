@@ -181,6 +181,7 @@
     transition: opacity 1s ease;
     position: relative;
     z-index: 20;
+    background: var(--deep-green);
   }
 
   .game-section.visible {
@@ -1201,6 +1202,26 @@
   function openEnvelope() {
     const envelope = document.getElementById('envelope');
     envelope.classList.add('opened');
+
+    // Play a warm envelope open chime
+    if (!chimeCtx) chimeCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (chimeCtx.state === 'suspended') chimeCtx.resume();
+    const now = chimeCtx.currentTime;
+
+    // Two-note chord (warm open feel)
+    [392, 523].forEach((freq, i) => {
+      const osc = chimeCtx.createOscillator();
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+      const gain = chimeCtx.createGain();
+      gain.gain.setValueAtTime(0, now);
+      gain.gain.linearRampToValueAtTime(0.3, now + 0.03);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 1.5);
+      osc.connect(gain);
+      gain.connect(chimeCtx.destination);
+      osc.start(now + i * 0.1);
+      osc.stop(now + 1.6);
+    });
 
     setTimeout(() => {
       document.getElementById('envelopeSection').classList.add('hidden');
